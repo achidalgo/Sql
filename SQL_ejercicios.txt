@@ -1,0 +1,102 @@
+SELECT nuempl, nombre, apellido, tlfn, nomdep
+FROM empleado
+LEFT JOIN departamento
+on dept=numdep
+WHERE (nombre like 'D%' or nombre like 'E%') and sexo='M';
+
+
+SELECT a.nombre, a.apellido, a.salario, a.feching, a.dept, b.tlfn 
+FROM (
+	SELECT e.nombre, e.apellido, e.salario, e.feching, e.dept 
+	FROM empleado as e 
+	WHERE salario>2000 and feching>'1975-01-01'
+	) as a 
+	LEFT JOIN (
+		SELECT d.numdep, e1.tlfn 
+		FROM departamento as d 
+ 		LEFT JOIN empleado as e1 
+ 		on (d.numdirec=e1.nuempl)
+		) as b 
+ 	on (a.dept=b.numdep);
+
+SELECT e.apellido, d.numdep, e.salario 
+FROM departamento as d 
+ INNER JOIN empleado as e
+ on (e.dept=d.numdep) 
+WHERE d.numdep in ('A00','B01','C01','D01') 
+ORDER BY d.numdep, e.salario;
+
+SELECT d.numdep, format(avg(e.salario),2) as prosalario, count(e.dept) as cantempleado
+FROM departamento as d 
+LEFT JOIN empleado as e
+on (e.dept=d.numdep) 
+WHERE e.codtra<=54
+GROUP BY d.numdep
+HAVING cantempleado>3
+
+SELECT *
+FROM empleado 
+WHERE dept in ('D11','E11') and apellido like 'S%'
+
+SELECT e.nombre, e.apellido, e.feching 
+FROM departamento as d 
+LEFT JOIN empleado as e
+on (d.numdirec=e.nuempl)
+ORDER BY e.nuempl
+
+SELECT nombre, apellido, niveduc, promedio
+FROM empleado, (SELECT format(avg(niveduc),2) as promedio 
+FROM empleado ) as e
+WHERE sexo='M' and (dept like 'D%' or dept like 'E%') and niveduc > promedio
+ORDER BY nuempl
+
+SELECT nuempl, empleado.nombre, apellido, dept, empleado.codtra
+FROM empleado
+JOIN (
+    SELECT DISTINCT nombre
+	FROM empleado
+	WHERE dept='D21'
+	ORDER BY nombre
+	) as a
+on empleado.nombre=a.nombre
+LEFT JOIN (
+    SELECT DISTINCT codtra
+	FROM empleado
+	WHERE dept='E21'
+	ORDER BY codtra
+    ) as b
+ON empleado.codtra=b.codtra     
+WHERE b.codtra is null
+ORDER BY nuempl
+
+SELECT nuempl, apellido, dept
+FROM empleado
+LEFT JOIN (
+    SELECT DISTINCT numdirec
+	FROM departamento 
+	ORDER BY numdirec
+	) as d
+on empleado.nuempl=d.numdirec   
+WHERE d.numdirec is null
+ORDER BY nuempl
+
+SELECT m.nuempl, m.nombre, m.apellido, m.fechnac, h.nuempl, h.nombre, h.apellido, h.fechnac
+FROM empleado as m
+INNER JOIN (
+    SELECT  a.nuempl, a.nombre, a.apellido, a.fechnac
+	FROM empleado as a
+    WHERE sexo='H'
+	) as h
+on m.fechnac=h.fechnac   
+WHERE m.sexo='M'
+ORDER BY m.nuempl
+
+SELECT nuempl, nombre, apellido, empleado.dept
+FROM empleado
+INNER JOIN (
+    SELECT dept
+	FROM empleado
+    WHERE nombre like 'Tomas' and apellido like 'Soler'
+	) as b
+on empleado.dept=b.dept   
+ORDER BY nuempl
