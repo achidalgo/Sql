@@ -32,7 +32,15 @@ LEFT JOIN empleado as e
 on (e.dept=d.numdep) 
 WHERE e.codtra<=54
 GROUP BY d.numdep
-HAVING cantempleado>3
+HAVING cantempleado>=3
+
+Otra 
+
+SELECT e.dept, format(avg(e.salario),2) as prosalario, count(e.dept) as cantempleado
+FROM empleado as e
+WHERE e.codtra<=54
+GROUP BY e.dept
+HAVING cantempleado>=3
 
 SELECT *
 FROM empleado 
@@ -79,6 +87,15 @@ LEFT JOIN (
 on empleado.nuempl=d.numdirec   
 WHERE d.numdirec is null
 ORDER BY nuempl
+
+Otra
+
+SELECT *
+FROM empleado
+WHERE CAST(nuempl as int) NOT IN
+    (SELECT CAST(numdirec as int) 
+	FROM departamento 
+    WHERE numdirec<>'') 
 
 SELECT m.nuempl, m.nombre, m.apellido, m.fechnac, h.nuempl, h.nombre, h.apellido, h.fechnac
 FROM empleado as m
